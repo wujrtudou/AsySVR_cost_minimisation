@@ -417,38 +417,3 @@ for (i in c(1:2)){
 }
 write.csv(Results,"Model_Indexes3.csv")
 write.csv(B,"Model_Errors3.csv")
-
-###################Quantile regression#####
-
-#Basic_LAV<-lad(formula = OutputTrain ~ ., data = LAV_TrainSet, method = "BR")
-
-#Basic_LAV_Prediction<-predict(Basic_LAV, newdata=as.data.frame(cbind(XTestCycle, InputTest)))
-
-library(quantreg)
-
-k1<-80/2
-
-for (j in c(600,900))
-{
-  
-  k2<-j/2
-  
-  k<-k2/k1
-  
-  tau1<-k/(1+k)
-  
-  fit<-rq(formula = OutputTrain ~ ., data = NScale_TrainSet , tau= tau1)
-  
-  Scale_QR_Prediction<-predict(fit, newdata = as.data.frame(NScale_TestSet[,1:50]))
-  
-  QR_Prediction<-Scale_QR_Prediction*sds[49]+means[49]
-  
-  QR_Error<-QR_Prediction-OutputTest
-  
-  TAU<-1-sum(sign(QR_Error<0))/length(Basic_LS_Error)
-  
-  fit_qr_Cost<-MFC(QR_Error,k1=k1,k=k)
-  
-  print(cbind(tau1,TAU,fit_qr_Cost))
-  
-}
